@@ -1,0 +1,21 @@
+Servant_Name,Image_ID,Order
+Asterios,s18,19
+Astolfo,s11,16
+Billy the Kid,s5,13
+Edward Teach,s8,10
+Gaius Julius Caesar,s2,11
+Gilgamesh,s13,1
+Henry Jekyll,s15,5
+Iskandar,s9,7
+Jaguar Man,s7,6
+Kijyo Kōyō,s19,12
+King Arthur,s1,0
+Leonardo da Vinci,s14,17
+Nikola Tesla,s6,15
+Robin Hood,s4,9
+Sherlock Holmes,s20,2
+Shuten Dōji,s16,8
+Siegfried,s3,18
+Sir Francis Drake,s10,14
+Spartacus,s17,3
+Xuanzang Sanzang,s12,4
