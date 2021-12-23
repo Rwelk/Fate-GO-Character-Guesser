@@ -216,7 +216,7 @@ class GraphWin(tk.Canvas):
 		self.mouseX = None
 		self.mouseY = None
 		self.bind("<Button-1>", self._onClick)
-		self.bind("<Motion>", self._mousemotion)
+		# self.bind("<Motion>", self._mousemotion)
 		self.bind("<ButtonRelease-1>", self._mouserelease)
 		self.clicked = False
 		self.bind_all("<Key>", self._onKey)

@@ -9,7 +9,6 @@ ROOT = Path(__file__).parent.absolute()
 
 class Servant:
 	
-	# functions
 	def __init__(self, name, img, offset=0, total_number=20):
 
 		# Determine where to anchor the displayed name of the servant:
@@ -146,11 +145,121 @@ class ScoreBox:
 
 	# Function for taking away a point from the player's score:
 	def sub_point(self):
-		self.score.setText(int(self.score.getText()) - 1)
+		if int(self.score.getText()) > 0:
+			self.score.setText(int(self.score.getText()) - 1)
+
+
+class Button:
+
+	def __init__(self, boundaries):
+		self.shape = Polygon(
+			*boundaries
+		)
+		self.shape.setFill('ghostwhite')
+		self.shape.setWidth(2)
+		self.active = False
+
+	def show(self):
+		self.shape.draw(GW)
+		self.active = True
+
+	def hide(self):
+		self.shape.undraw()
+		self.active = False
+
+	# This method determines if the given point is inside or outside the polygon.
+	# Due to the way this is coded, there is ambiguity when clicked exactly on the border of the shape.
+	# 	point is a Point object that will be compared to the boundaries of the button.
+	def clicked(self, point):
+
+		# If the button has been deactivated, it should immmediately return false.
+		if not self.active:
+			return False
+
+		num_vertices = len(self.shape.points)
+		inside = False
+
+		# Loop through each of the line segments that make up the shape of the button.
+		for i in range(num_vertices):
+
+			# 
+			line1 = (point, Point(10000, point.y))
+			line2 = (self.shape.points[i], self.shape.points[(i + 1) % num_vertices])
+			if self._doIntersect(line1, line2):
+				inside = not inside
+
+		return inside
 
 	
+	# This function checks two lines, and returns true if they intersect.
+	# 	line1() is a tuple of Point objects containing the two endpoints of the line.
+	# 	line2() is also a tuple of Point objects containing the two endpoints of a separate line.
+	def _doIntersect(self, line1, line2):
 
+		p1 = line1[0]
+		p2 = line1[1]
+		q1 = line2[0]
+		q2 = line2[1]
+		
+		
+		# Find the 4 orientations required for the general and special cases
+		o1 = self._orientation(p1, p2, q1)
+		o2 = self._orientation(p1, p2, q2)
+		o3 = self._orientation(q1, q2, p1)
+		o4 = self._orientation(q1, q2, p2)
+	
+		if (
+			# General Case where no points are colinear:
+			((o1 != o2) and (o3 != o4)) or
 
+			# q1 lies on line1
+			((o1 == 0) and self._onSegment(q1, line1)) or
+
+			# q2 lies on line1
+			((o2 == 0) and self._onSegment(q2, line1)) or
+
+			# Else, if p1 lies on line2
+			((o3 == 0) and self._onSegment(p1, line2)) or
+
+			# Else, if p2 lies on line2
+			((o4 == 0) and self._onSegment(p2, line2))
+		):
+			return True
+		
+	
+		# Else, the lines do not intercept.
+		return False
+
+	# This method finds the orientation of an ordered triplet of points and returns the following values:
+	# 	0 if the points are collinear
+	# 	1 if the points are clockwise
+	# 	2 if the points are counterclockwise
+	# 	p, q, and r are all Point objects.
+	def _orientation(self, p, q, r):
+		
+		val = (float(q.y - p.y) * (r.x - q.x)) - (float(q.x - p.x) * (r.y - q.y))
+		
+		# Clockwise orientation
+		if (val > 0):
+			return 1
+		
+		# Counterclockwise orientation
+		elif (val < 0):
+			return 2
+		
+		# Collinear orientation
+		else:
+			return 0
+
+	
+	# This method checks if point q lies on the given line.
+	# 	q is a Point object.
+	# 	line() is a tuple containing 2 Points, where the Points are each an endpoint of the line.
+	def _onSegment(self, q, line):
+		if ( (q.x <= max(line[0].x, line[1].x)) and (q.x >= min(line[0].x, line[1].x)) and
+			(q.y <= max(line[0].y, line[1].y)) and (q.y >= min(line[0].y, line[1].y))):
+			return True
+		return False
 
 
 def create_canvas(x, y):
@@ -227,26 +336,20 @@ def create_canvas(x, y):
 		i.img.anchor = main_area_background.anchor
 
 	# Create the forward and back arrows to progress through the game:
-	back_arrow = Polygon(
+	back_arrow = Button([
 		Point(10, (HEIGHT / 2)),
 		Point(40, ((HEIGHT / 2) - 30)),
-		Point(40, ((HEIGHT / 2) + 30)),
-	)
-	back_arrow.setFill('ghostwhite')
-	back_arrow.setWidth(2)
-	back_arrow.draw(gw)
+		Point(40, ((HEIGHT / 2) + 30))
+	])
 
-	next_arrow = Polygon(
+	next_arrow = Button([
 		Point((main_area_width - 10), (HEIGHT / 2)),
 		Point((main_area_width - 40), ((HEIGHT / 2) - 30)),
 		Point((main_area_width - 40), ((HEIGHT / 2) + 30)),
-	)
-	next_arrow.setFill('ghostwhite')
-	next_arrow.setWidth(2)
-	next_arrow.draw(gw)
+	])
 
 	# Return the GraphWin
-	return gw, servant_list, player_list
+	return gw, servant_list, player_list, back_arrow, next_arrow
 
 
 # Function for reading from a file
@@ -262,8 +365,8 @@ def read_file(file):
 
 
 # Function for creating all the Servant objects in the Name Bank
-#   file is the file where the servants and the image associated with them are stored, which by default is 
-#       'servants.txt'
+# 	file is the file where the servants and the image associated with them are stored, which by default is 
+# 		'servants.txt'
 def generate_servant_list(file='servants.txt', randomize=False):
 
 	contents = read_file(file)
@@ -319,7 +422,7 @@ def welcome_screen():
 
 WIDTH = 1300
 HEIGHT = 775
-GW, SERVANT_LIST, PLAYER_LIST = create_canvas(WIDTH, HEIGHT)
+GW, SERVANT_LIST, PLAYER_LIST, BACK_ARROW, NEXT_ARROW = create_canvas(WIDTH, HEIGHT)
 
 
 if __name__ == '__main__':

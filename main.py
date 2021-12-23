@@ -1,6 +1,5 @@
 # main.py
 
-from tkinter import Place
 from graphics import *
 from main_window import *
 from pathlib import Path
@@ -14,6 +13,8 @@ def main():
 	for i in PLAYER_LIST:
 		i.draw()
 
+	NEXT_ARROW.show()
+
 	
 	longest_name = 0
 	for i in SERVANT_LIST:
@@ -23,7 +24,8 @@ def main():
 
 	welcome_screen()
 
-	i = -1
+
+	i = 0
 	state = 0
 	while True:
 
@@ -39,24 +41,25 @@ def main():
 
 			# If the click is within the area for the next and back arrows:
 			elif (((HEIGHT / 2) - 30) <= click.y <= ((HEIGHT / 2) + 30)):
-				if ((main_area_width - 40) <= click.x <= (main_area_width - 10)):
+
+				print(f"Was: i = {i}, state = {state}", end='	')
+				if (NEXT_ARROW.clicked(click)):
 					if state == 0:
-						i += 1
 						state += 1
 						SERVANT_LIST[i].show_portrait()
 
 					elif state == 1:
 						state += 1
 						SERVANT_LIST[i].confirm_name()
-
-						
+	
 					elif state == 2:
 						state = 0
 						SERVANT_LIST[i].disable_name()
 						SERVANT_LIST[i].hide_portrait()
+						i += 1
 
 
-				elif (10 <= click.x <= 40):
+				elif (BACK_ARROW.clicked(click)):
 					if state == 0:
 						i -= 1
 						state = 2
@@ -66,16 +69,16 @@ def main():
 						state -= 1
 						SERVANT_LIST[i].confirm_name()
 
-						
 					elif state == 2:
 						state -= 1
 						SERVANT_LIST[i].reset_name()
-						SERVANT_LIST[i].show_portrait()
 
+				print(f"Now: i = {i}, state = {state}")
 
-
-
-
+			if i == 0:
+				if state == 0:
+					BACK_ARROW.hide()
+				else: BACK_ARROW.show()
 
 
 
