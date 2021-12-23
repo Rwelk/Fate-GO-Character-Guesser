@@ -42,44 +42,55 @@ def main():
 			# If the click is within the area for the next and back arrows:
 			elif (((HEIGHT / 2) - 30) <= click.y <= ((HEIGHT / 2) + 30)):
 
-				print(f"Was: i = {i}, state = {state}", end='	')
+				# If NEXT_ARROW is clicked:
 				if (NEXT_ARROW.clicked(click)):
+					
+					# If the state is 0, advance the state and show the portrait for the Servant.
 					if state == 0:
 						state += 1
 						SERVANT_LIST[i].show_portrait()
 
+					# If the state is 1, advance the state again and show the Servant's name.
 					elif state == 1:
 						state += 1
 						SERVANT_LIST[i].confirm_name()
-	
+
+					# If the state is 2, return to state 0.
+					# Then, hide the Servant's portrait and strike out their name.
+					# Finally, increment i by 1 to move on to the next Servant.
 					elif state == 2:
 						state = 0
-						SERVANT_LIST[i].disable_name()
 						SERVANT_LIST[i].hide_portrait()
+						SERVANT_LIST[i].disable_name()
 						i += 1
 
 
+				# Else if BACK_ARROW is clicked:
 				elif (BACK_ARROW.clicked(click)):
-					if state == 0:
-						i -= 1
-						state = 2
-						SERVANT_LIST[i].show_portrait()
 
-					elif state == 1:
-						state -= 1
+					# If the state is 0, return the state back to 2 and decrement i to return to the
+					# 	previous Servant.
+					# Then, show their portrait and rehighlight their name.
+					if state == 0:
+						state = 2
+						i -= 1
+						SERVANT_LIST[i].show_portrait()
 						SERVANT_LIST[i].confirm_name()
 
+					# If the state is 2, skip state 1 and go directly to state 0.
+					# Then, hide the Servant's portrait and reset the their name to its default state.
 					elif state == 2:
-						state -= 1
+						state = 0
+						SERVANT_LIST[i].hide_portrait()
 						SERVANT_LIST[i].reset_name()
 
-				print(f"Now: i = {i}, state = {state}")
 
+			# If i is 0, we are on the first Servant.
 			if i == 0:
-				if state == 0:
-					BACK_ARROW.hide()
-				else: BACK_ARROW.show()
 
+				# Additionally, if the state is 0, the game hasn't started, and BACK_ARROW should therefore
+				# 	be disabled. Otherwise, show BACK_ARROW.
+				BACK_ARROW.hide() if state == 0 else BACK_ARROW.show()
 
 
 if __name__ == '__main__':

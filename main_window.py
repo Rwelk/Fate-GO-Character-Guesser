@@ -63,6 +63,7 @@ class Servant:
 	# Reveal who the servant really is
 	def confirm_name(self):
 		self.name.setTextColor('limegreen')
+		self.strikethrough.undraw()
 
 	# Mark out the servant's name from the name bank so players won't reuse it.
 	def disable_name(self):
