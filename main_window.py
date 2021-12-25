@@ -266,7 +266,7 @@ class Button:
 def create_canvas(x, y):
 
 	# Create the GraphWin
-	gw = GraphWin("Guess the Fate/Grand Order Character!", x, y)
+	gw = GraphWin("Fate/Grand Order Character Guesser", x, y)
 
 
 	# Create the Name Bank

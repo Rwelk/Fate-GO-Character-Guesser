@@ -77,9 +77,9 @@ def main():
 						SERVANT_LIST[i].show_portrait()
 						SERVANT_LIST[i].confirm_name()
 
-					# If the state is 2, skip state 1 and go directly to state 0.
-					# Then, hide the Servant's portrait and reset the their name to its default state.
-					elif state == 2:
+					# Else the state is 1 or 2, and should skip directly to state 0.
+					# Then, hide the Servant's portrait and reset their name to the default style.
+					else:
 						state = 0
 						SERVANT_LIST[i].hide_portrait()
 						SERVANT_LIST[i].reset_name()
