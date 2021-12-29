@@ -767,10 +767,10 @@ class Text(GraphicsObject):
 			raise GraphicsError(BAD_OPTION)
 
 	def setSize(self, size):
-		if 5 <= size <= 36:
+		try:
 			f,s,b = self.config['font']
 			self._reconfig("font", (f,size,b))
-		else:
+		except:
 			raise GraphicsError(BAD_OPTION)
 
 	def setStyle(self, style):

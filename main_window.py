@@ -397,6 +397,7 @@ def generate_player_list(file='players.txt'):
 	return arr
 
 
+# Function for showing a nice screen before the game begins.
 def welcome_screen():
 	screen = Rectangle(Point(0, 0), Point(WIDTH, HEIGHT))
 	screen.setFill('ghostwhite')
@@ -421,6 +422,75 @@ def welcome_screen():
 	screen.undraw()
 
 
+# Function for displaying who won the game after it is over.
+def awards():
+	
+	# Clear away everything from the GraphWin.
+	GW.clear()
+
+	GW_center = GW.width / 2
+	GW_quarter = GW_center / 2
+
+	# Create and underline the "Congratulations" message.
+	congratulations = Text(Point(GW_center, 0), "Congratulations!")
+	congratulations.setSize(50)
+	congratulations.setAnchor('n')
+	congratulations.draw(GW)
+	congratulations_underline = Line(Point(GW_center - 240, 65), Point(GW_center + 240, 65))
+	congratulations_underline.setWidth(6)
+	congratulations_underline.draw(GW)
+
+	# Create the text that tells the user how to finish.
+	message = Text(Point(GW_center, GW.height - 30), "Click anywhere to finish.")
+	message.setJustification('center')
+	message.setAnchor('c')
+	message.setSize(15)
+	message.draw(GW)
+
+
+	# Save all the player's scores.
+	scores = [[] for i in range(len(SERVANT_LIST) + 1)]
+	for i in PLAYER_LIST:
+		player = i.name.getText() 
+		score = i.score.getText()
+		scores[score].append(player)
+
+	# Filter out all the scores that are empty, and reverse the list so the highest scores come first.
+	scores = [(i, scores[i]) for i in range(len(scores)) if scores[i]]
+	scores = scores[::-1]
+	
+	# In case there aren't three places, pad scores[] so that there are at least three entries.
+	while len(scores) < 3:
+		scores.append(('', []))
+
+
+	# Colors for each of the podiums:
+	colors = ['gold', color_rgb(192, 192, 192), color_rgb(205, 127, 50)]
+
+	# Create three podiums, one for 1st place, one for 2nd place, and one for 3rd.
+	for i in range(3):
+		podium = Rectangle(Point((GW_quarter * (i + 1)) - 65, (i * 150) + 200), Point((GW_quarter * (i + 1)) + 65, GW.height - 60))
+		podium.setFill(colors[i])
+		podium.setWidth(3)
+		podium.draw(GW)
+
+		# Show the name(s) of who won.
+		winner_name = Text(Point((GW_quarter * (i + 1)), (i * 150) + 195), ", ".join(scores[i][1]))
+		winner_name.setSize(40)
+		winner_name.setJustification('center')
+		winner_name.setAnchor('s')
+		winner_name.draw(GW)
+
+		# Show their score.
+		winner_score = Text(Point((GW_quarter * (i + 1)), GW.height - 70), scores[i][0])
+		winner_score.setSize(40)
+		winner_score.setAnchor('s')
+		winner_score.draw(GW)
+
+	# Wait for the user to click before finishing.
+	GW.getMouse()
+
+
 WIDTH = 1300
 HEIGHT = 775
 GW, SERVANT_LIST, PLAYER_LIST, BACK_ARROW, NEXT_ARROW = create_canvas(WIDTH, HEIGHT)
@@ -429,5 +499,5 @@ GW, SERVANT_LIST, PLAYER_LIST, BACK_ARROW, NEXT_ARROW = create_canvas(WIDTH, HEI
 if __name__ == '__main__':
 	print('Running globals.py')
 
-
+	awards()
 	GW.getMouse()

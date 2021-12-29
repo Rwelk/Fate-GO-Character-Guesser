@@ -1,6 +1,7 @@
 # main.py
 
 from graphics import *
+from PIL import Image
 from main_window import *
 from pathlib import Path
 ROOT = Path(__file__).parent.absolute()
@@ -44,6 +45,10 @@ def main():
 
 				# If NEXT_ARROW is clicked:
 				if (NEXT_ARROW.clicked(click)):
+
+					# If the we finished up the last Servant, break out of the loop to start the awards.
+					if i == len(SERVANT_LIST):
+						break
 					
 					# If the state is 0, advance the state and show the portrait for the Servant.
 					if state == 0:
@@ -91,6 +96,9 @@ def main():
 				# Additionally, if the state is 0, the game hasn't started, and BACK_ARROW should therefore
 				# 	be disabled. Otherwise, show BACK_ARROW.
 				BACK_ARROW.hide() if state == 0 else BACK_ARROW.show()
+
+
+	awards()
 
 
 if __name__ == '__main__':
